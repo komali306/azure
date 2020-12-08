@@ -1,0 +1,6 @@
+# create resource group
+az group create --name rglinux --location eastus     
+# create vm
+az vm create --name vm --resource-group rglinux --vnet-name vnetlinux --vnet-address-prefix 10.0.0.0/16 --subnet web --subnet-address-prefix 10.0.0.0/24 --image UbuntuLTS --admin-username username --admin-password Dhanalakshmi@306 --size Standard_B1s 
+# opening ports
+az vm open-port --port 8080 --resource-group rglinux --name vm

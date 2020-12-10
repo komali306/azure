@@ -1,0 +1,21 @@
+# create resource group
+az group create --name 'rg' --location 'eastus'     
+# create vnet
+az network vnet create --name 'vnet' --resource-group 'rg'  --address-prefix '10.0.0.0/16' --location 'eastus'
+# create subnet
+az network vnet subnet create --address-prefixes '10.0.0.0/24' --name 'web' --resource-group 'rg' --vnet-name 'vnet'
+
+az network vnet subnet create --address-prefixes '10.0.1.0/24' --name 'app' --resource-group 'rg' --vnet-name 'vnet'
+
+az network vnet subnet create --address-prefixes '10.0.2.0/24' --name 'db' --resource-group 'rg' --vnet-name 'vnet'
+
+# create nsg
+az network nsg create --name 'nsg' --resource-group 'rg' 
+
+az network nsg rule create --name 'nsgrule' --resource-group 'rg' --nsg-name 'nsg' --priority '800' --source-address-prefix 'internet' --destination-port-ranges '8080 22' --protocol 'tcp' --access 'allow' --description "allow internet to all on ports 8080 && 22"
+
+# create vmss
+az vmss create --resource-group 'rg' --name 'appss' --image 'UbuntuLTS' --admin-username 'username' --admin-password 'Dhanalakshmi@306' --vnet-name 'vnet' --subnet 'app'  --nsg 'nsg' --authentication-type 'password'  --instance-count '2' --vm-sku 'standard_B1s'
+
+# to deploy the shell scripts
+az vmss extension set --name 'golscript' --resource-group 'rg' --version '2.0' --publisher 'Microsoft.Azure.Extensions' --vmss-name 'apss' --settings 

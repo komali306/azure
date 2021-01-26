@@ -1,0 +1,6 @@
+[submodule "database"]
+	path = database
+	url = https://github.com/komali306/azure.git
+[submodule "sqldb"]
+	path = sqldb
+	url = https://github.com/komali306/azure.git

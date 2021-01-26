@@ -12,10 +12,13 @@ az network vnet subnet create --address-prefixes '10.0.2.0/24' --name 'db' --res
 # create nsg
 az network nsg create --name 'nsg' --resource-group 'rg' 
 
-az network nsg rule create --name 'nsgrule' --resource-group 'rg' --nsg-name 'nsg' --priority '800' --source-address-prefix 'internet' --destination-port-ranges '8080 22' --protocol 'tcp' --access 'allow' --description "allow internet to all on ports 8080 && 22"
+az network nsg rule create --name 'nsgrule' --resource-group 'rg' --nsg-name 'nsg' --priority '800' --source-address-prefix 'internet' --destination-port-ranges 8080 22 --protocol 'tcp' --access 'allow' --description "allow internet to all on ports 8080 && 22"
 
 # create vmss
 az vmss create --resource-group 'rg' --name 'appss' --image 'UbuntuLTS' --admin-username 'username' --admin-password 'Dhanalakshmi@306' --vnet-name 'vnet' --subnet 'app'  --nsg 'nsg' --authentication-type 'password'  --instance-count '2' --vm-sku 'standard_B1s'
 
 # to deploy the shell scripts
-az vmss extension set --name 'golscript' --resource-group 'rg' --version '2.0' --publisher 'Microsoft.Azure.Extensions' --vmss-name 'apss' --settings 
+az vmss extension set --name "customscript" --resource-group "rg" --version "2.0" --publisher "Microsoft.Azure.Extensions" --vmss-name "appss" --settings "{'fileUris':['https://raw.githubusercontent.com/komali306/azure/main/cliscripts/tomcat/installgol.sh'], 'commandtoexecute': './installgol.sh'}"
+
+# create loadbalancerrule
+az network lb rule create --name lbapssrule --lb-name appssLB --resource-group rg --backend-pool-name appssLBBEPool --backend-port 8080 --frontend-port 80 --frontend-ip-name loadBalancerFrontEnd --protocol Tcp 
